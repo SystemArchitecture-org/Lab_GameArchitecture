@@ -52,8 +52,8 @@ public class Cue {
                 this.converter.screenToPhysicsX(endX),
                 this.converter.screenToPhysicsY(endY)
         );
-        Vector2 direction = end.subtract(start).rotate(Rotation.rotation180());
-        return direction;
+
+        return start.subtract(end);
     }
 
     public Optional<Ray> getShotRay() {

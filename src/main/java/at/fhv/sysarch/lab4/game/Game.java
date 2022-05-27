@@ -42,7 +42,8 @@ public class Game {
         Optional<Ray> ray = cue.getShotRay();
         if (ray.isPresent()) {
             ArrayList<RaycastResult> results = new ArrayList<>();
-            boolean result = this.physics.getWorld().raycast(ray.get(), 1, false, false, results);
+            boolean result = this.physics.getWorld().raycast(ray.get(), 0.1, false, false, results);
+
             if (result && results.get(0).getBody().getUserData() instanceof Ball) {
                 RaycastResult hit = results.get(0);
                 hit.getBody().applyForce(cue.getShotForce().multiply(SCALE));
@@ -97,6 +98,7 @@ public class Game {
                 continue;
 
             balls.add(b);
+            physics.getWorld().addBody(b.getBody());
         }
 
         this.placeBalls(balls);
