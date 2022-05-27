@@ -43,7 +43,7 @@ public class Cue {
         return endY;
     }
 
-    public Vector2 getShotForce(){
+    public Vector2 getShotForce() {
         Vector2 start = new Vector2(
                 this.converter.screenToPhysicsX(startX),
                 this.converter.screenToPhysicsY(startY)
@@ -61,7 +61,9 @@ public class Cue {
                 this.converter.screenToPhysicsX(startX),
                 this.converter.screenToPhysicsY(startY)
         );
+
         Vector2 direction = getShotForce();
+
         if (!direction.isZero()) {
             return Optional.of(new Ray(start, direction));
         }

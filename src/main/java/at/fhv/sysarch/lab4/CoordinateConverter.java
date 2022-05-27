@@ -7,8 +7,8 @@ public class CoordinateConverter {
     private double centerX;
     private double centerY;
 
-    public static CoordinateConverter getInstance(){
-        if (instance == null){
+    public static CoordinateConverter getInstance() {
+        if (instance == null) {
             instance = new CoordinateConverter();
         }
         return instance;
@@ -59,12 +59,12 @@ public class CoordinateConverter {
         return pY;
     }
 
-    public CoordinateConverter setSceneWidth(double sceneWidth){
+    public CoordinateConverter setSceneWidth(double sceneWidth) {
         this.centerX = (double) sceneWidth * 0.5;
         return instance;
     }
 
-    public CoordinateConverter setSceneHeight(double sceneHeight){
+    public CoordinateConverter setSceneHeight(double sceneHeight) {
         this.centerY = (double) sceneHeight * 0.5;
         return instance;
     }

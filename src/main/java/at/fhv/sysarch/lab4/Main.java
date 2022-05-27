@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-    private final static int SCENE_WIDTH  = 1920;
+    private final static int SCENE_WIDTH = 1920;
     private final static int SCENE_HEIGHT = 1080;
 
     @Override
@@ -24,10 +24,10 @@ public class Main extends Application {
         Physics physics = new Physics();
 
         Renderer renderer = new Renderer(
-            c.getGraphicsContext2D(),
-            SCENE_WIDTH, 
-            SCENE_HEIGHT, physics);
-        
+                c.getGraphicsContext2D(),
+                SCENE_WIDTH,
+                SCENE_HEIGHT, physics);
+
         Game game = new Game(renderer, physics);
 
         c.setOnMousePressed(game::onMousePressed);

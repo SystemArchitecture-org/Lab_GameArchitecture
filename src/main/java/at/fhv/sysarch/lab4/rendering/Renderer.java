@@ -221,9 +221,9 @@ public class Renderer extends AnimationTimer {
             this.gc.setStroke(Color.GHOSTWHITE);
             this.gc.strokeLine(cue.get().getStartX(), cue.get().getStartY(), cue.get().getEndX(), cue.get().getEndY());
 
-            this.gc.setStroke(Color.color(0,0,0,0.4));
-            double diameter = 0.2*SCALE;
-            this.gc.strokeOval(cue.get().getStartX()-diameter/2,cue.get().getStartY()-diameter/2, diameter, diameter);
+            this.gc.setStroke(Color.color(0, 0, 0, 0.4));
+            double diameter = 0.2 * SCALE;
+            this.gc.strokeOval(cue.get().getStartX() - diameter / 2, cue.get().getStartY() - diameter / 2, diameter, diameter);
         }
     }
 

@@ -40,6 +40,7 @@ public class Game {
     public void onMouseReleased(MouseEvent e) {
         Cue cue = this.renderer.getCue().get();
         Optional<Ray> ray = cue.getShotRay();
+
         if (ray.isPresent()) {
             ArrayList<RaycastResult> results = new ArrayList<>();
             boolean result = this.physics.getWorld().raycast(ray.get(), 0.1, false, false, results);
@@ -47,7 +48,6 @@ public class Game {
             if (result && results.get(0).getBody().getUserData() instanceof Ball) {
                 RaycastResult hit = results.get(0);
                 hit.getBody().applyForce(cue.getShotForce().multiply(SCALE));
-
             }
         }
 
