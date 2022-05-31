@@ -66,7 +66,20 @@ public class Physics implements ContactListener, StepListener {
 
     @Override
     public void end(ContactPoint point) {
+        int movingBallCount = 0;
 
+        for(Ball ball: Ball.values()){
+            if(ball.getBody().getAngularVelocity() > 0){
+                movingBallCount++;
+            }
+        }
+
+        if(movingBallCount > 0){
+            objectsRestListener.onEndAllObjectsRest();
+
+        } else {
+            objectsRestListener.onStartAllObjectsRest();
+        }
     }
 
     @Override

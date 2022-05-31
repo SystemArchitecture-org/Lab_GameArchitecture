@@ -18,7 +18,8 @@ public class Main extends Application {
     public void start(Stage stage) {
         final Group root = new Group();
         final Scene s = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT, Color.BURLYWOOD);
-        final Canvas c = new Canvas(SCENE_WIDTH, SCENE_WIDTH);
+        final Canvas c = new Canvas(SCENE_WIDTH, SCENE_HEIGHT);
+
         CoordinateConverter.getInstance().setSceneHeight(SCENE_HEIGHT).setSceneWidth(SCENE_WIDTH);
 
         Physics physics = new Physics();
@@ -26,7 +27,9 @@ public class Main extends Application {
         Renderer renderer = new Renderer(
                 c.getGraphicsContext2D(),
                 SCENE_WIDTH,
-                SCENE_HEIGHT, physics);
+                SCENE_HEIGHT,
+                physics
+        );
 
         Game game = new Game(renderer, physics);
 
