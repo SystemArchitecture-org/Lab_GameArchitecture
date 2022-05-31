@@ -39,6 +39,9 @@ public class Main extends Application {
         stage.setTitle("Billiard Game");
         stage.show();
 
+        physics.setBallPocketedListener(game);
+        physics.setObjectsRestListener(game);
+
         renderer.start();
     }
 

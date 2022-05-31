@@ -7,20 +7,30 @@ import java.util.List;
 import java.util.Optional;
 
 import at.fhv.sysarch.lab4.CoordinateConverter;
+import at.fhv.sysarch.lab4.physics.BallPocketedListener;
+import at.fhv.sysarch.lab4.physics.ObjectsRestListener;
 import at.fhv.sysarch.lab4.physics.Physics;
 import at.fhv.sysarch.lab4.rendering.Renderer;
 import javafx.scene.input.MouseEvent;
 import org.dyn4j.collision.narrowphase.Raycast;
+import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.RaycastResult;
 import org.dyn4j.geometry.Ray;
 import org.dyn4j.geometry.Vector2;
 
 import static at.fhv.sysarch.lab4.rendering.Renderer.SCALE;
 
-public class Game {
+public class Game implements BallPocketedListener, ObjectsRestListener {
     private final Renderer renderer;
     private final Physics physics;
     private CoordinateConverter converter;
+    private int player1Score = 0;
+    private int player2Score = 0;
+    private Player currentPlayer = Player.PLAYER_ONE;
+    private boolean isFoul = false;
+    private boolean isWhiteBallPocketed = false;
+    private double whiteBallX = Table.Constants.WIDTH * 0.25;
+    private double whiteBallY = 0;
 
     public Game(Renderer renderer, Physics physics) {
         this.renderer = renderer;
@@ -47,6 +57,12 @@ public class Game {
 
             if (result && results.get(0).getBody().getUserData() instanceof Ball) {
                 RaycastResult hit = results.get(0);
+                Body body = hit.getBody();
+                Ball ball = (Ball) body.getUserData();
+
+                if (!ball.isWhite()) {
+                    isFoul = true;
+                }
                 hit.getBody().applyForce(cue.getShotForce().multiply(SCALE));
             }
         }
@@ -101,6 +117,7 @@ public class Game {
             physics.getWorld().addBody(b.getBody());
         }
 
+
         this.placeBalls(balls);
 
         Ball.WHITE.setPosition(Table.Constants.WIDTH * 0.25, 0);
@@ -110,5 +127,80 @@ public class Game {
         Table table = new Table();
         physics.getWorld().addBody(table.getBody());
         renderer.setTable(table);
+    }
+
+    @Override
+    public boolean onBallPocketed(Ball b) {
+
+
+        if (b.isWhite()) {
+            isWhiteBallPocketed = true;
+            isFoul = true;
+        } else {
+            renderer.removeBall(b);
+            physics.getWorld().removeBody(b.getBody());
+            updatePlayerScore(1);
+        }
+
+        return true;
+    }
+
+    private void updatePlayerScore(int score) {
+        if (currentPlayer == Player.PLAYER_ONE) {
+            player1Score += score;
+            renderer.setPlayer1Score(player1Score);
+        } else {
+            player2Score += score;
+            renderer.setPlayer2Score(player2Score);
+        }
+
+    }
+
+    @Override
+    public void onEndAllObjectsRest() {
+
+    }
+
+    @Override
+    public void onStartAllObjectsRest() {
+
+        if (isFoul) {
+            updatePlayerScore(-1);
+            currentPlayer = currentPlayer.getOpponent();
+            isFoul = false;
+        }
+
+        if (isWhiteBallPocketed) {
+            System.out.println("White ball pocketed");
+            resetWhiteBall();
+            isWhiteBallPocketed = false;
+        }
+
+        whiteBallX = Ball.WHITE.getBody().getTransform().getTranslationX();
+        whiteBallY = Ball.WHITE.getBody().getTransform().getTranslationY();
+    }
+
+    private void resetWhiteBall() {
+        Ball.WHITE.getBody().setLinearVelocity(0, 0);
+        Ball.WHITE.setPosition(whiteBallX, whiteBallY);
+    }
+
+    public enum Player {
+        PLAYER_ONE("Player 1"),
+        PLAYER_TWO("Player 2");
+
+        private final String name;
+
+        Player(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Player getOpponent() {
+            return this == PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
+        }
     }
 }
