@@ -44,6 +44,7 @@ public class Main extends Application {
 
         physics.setBallPocketedListener(game);
         physics.setObjectsRestListener(game);
+        physics.setBallsCollisionListener(game);
 
         renderer.start();
     }

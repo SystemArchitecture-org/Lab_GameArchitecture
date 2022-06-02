@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import at.fhv.sysarch.lab4.CoordinateConverter;
 import at.fhv.sysarch.lab4.physics.BallPocketedListener;
+import at.fhv.sysarch.lab4.physics.BallsCollisionListener;
 import at.fhv.sysarch.lab4.physics.ObjectsRestListener;
 import at.fhv.sysarch.lab4.physics.Physics;
 import at.fhv.sysarch.lab4.rendering.Renderer;
@@ -20,7 +21,7 @@ import org.dyn4j.geometry.Vector2;
 
 import static at.fhv.sysarch.lab4.rendering.Renderer.SCALE;
 
-public class Game implements BallPocketedListener, ObjectsRestListener {
+public class Game implements BallPocketedListener, ObjectsRestListener, BallsCollisionListener {
     private final Renderer renderer;
     private final Physics physics;
     private CoordinateConverter converter;
@@ -31,15 +32,25 @@ public class Game implements BallPocketedListener, ObjectsRestListener {
     private boolean isWhiteBallPocketed = false;
     private double whiteBallX = Table.Constants.WIDTH * 0.25;
     private double whiteBallY = 0;
+    private boolean ballsMoving = false;
+    private boolean ballsTouched = false;
+    private String foulMessage = "";
+    private String actionMessage = "";
+    private boolean regularBallPocketed = false;
 
     public Game(Renderer renderer, Physics physics) {
         this.renderer = renderer;
         this.physics = physics;
+        renderer.setStrikeMessage("Next Strike: " + currentPlayer.name);
         this.initWorld();
         this.converter = CoordinateConverter.getInstance();
     }
 
     public void onMousePressed(MouseEvent e) {
+        if (ballsMoving) {
+            return;
+        }
+
         double x = e.getX();
         double y = e.getY();
 
@@ -48,6 +59,10 @@ public class Game implements BallPocketedListener, ObjectsRestListener {
     }
 
     public void onMouseReleased(MouseEvent e) {
+        if (ballsMoving || renderer.getCue().isEmpty()) {
+            return;
+        }
+
         Cue cue = this.renderer.getCue().get();
         Optional<Ray> ray = cue.getShotRay();
 
@@ -63,6 +78,10 @@ public class Game implements BallPocketedListener, ObjectsRestListener {
                 if (!ball.isWhite()) {
                     isFoul = true;
                 }
+
+                whiteBallX = Ball.WHITE.getBody().getTransform().getTranslationX();
+                whiteBallY = Ball.WHITE.getBody().getTransform().getTranslationY();
+
                 hit.getBody().applyForce(cue.getShotForce().multiply(SCALE));
             }
         }
@@ -71,6 +90,10 @@ public class Game implements BallPocketedListener, ObjectsRestListener {
     }
 
     public void setOnMouseDragged(MouseEvent e) {
+        if (ballsMoving || renderer.getCue().isEmpty()) {
+            return;
+        }
+
         double x = e.getX();
         double y = e.getY();
 
@@ -80,7 +103,7 @@ public class Game implements BallPocketedListener, ObjectsRestListener {
     private void placeBalls(List<Ball> balls) {
         Collections.shuffle(balls);
 
-        // positioning the billard balls IN WORLD COORDINATES: meters
+        // positioning the billiard balls IN WORLD COORDINATES: meters
         int row = 0;
         int col = 0;
         int colSize = 5;
@@ -131,12 +154,15 @@ public class Game implements BallPocketedListener, ObjectsRestListener {
 
     @Override
     public boolean onBallPocketed(Ball b) {
-
+        b.getBody().setLinearVelocity(0, 0);
 
         if (b.isWhite()) {
             isWhiteBallPocketed = true;
             isFoul = true;
+            foulMessage = "Foul: White Ball Pocketed!";
+            renderer.removeBall(b);
         } else {
+            regularBallPocketed = true;
             renderer.removeBall(b);
             physics.getWorld().removeBody(b.getBody());
             updatePlayerScore(1);
@@ -158,31 +184,58 @@ public class Game implements BallPocketedListener, ObjectsRestListener {
 
     @Override
     public void onEndAllObjectsRest() {
+        ballsMoving = true;
+    }
 
+    private void switchPlayer() {
+        currentPlayer = currentPlayer.getOpponent();
+        renderer.setStrikeMessage("Next Strike: " + currentPlayer.name);
     }
 
     @Override
     public void onStartAllObjectsRest() {
+        ballsMoving = false;
+
+        if (!ballsTouched) {
+            foulMessage = foulMessage.equals("") ? "Foul: White ball did not touch any other ball(s)!" : foulMessage;
+            isFoul = true;
+        }
 
         if (isFoul) {
+            actionMessage = currentPlayer.getName() + " committed a foul, switching players.";
             updatePlayerScore(-1);
-            currentPlayer = currentPlayer.getOpponent();
+            switchPlayer();
             isFoul = false;
+        } else if (!regularBallPocketed) {
+            actionMessage = currentPlayer.getName() + " did not pocket a ball, switching players.";
+            switchPlayer();
         }
 
         if (isWhiteBallPocketed) {
-            System.out.println("White ball pocketed");
+            renderer.addBall(Ball.WHITE);
             resetWhiteBall();
             isWhiteBallPocketed = false;
         }
 
-        whiteBallX = Ball.WHITE.getBody().getTransform().getTranslationX();
-        whiteBallY = Ball.WHITE.getBody().getTransform().getTranslationY();
+        renderer.setActionMessage(actionMessage);
+        actionMessage = "";
+        renderer.setFoulMessage(foulMessage);
+        foulMessage = "";
+
+        regularBallPocketed = false;
+        ballsTouched = false;
     }
 
     private void resetWhiteBall() {
-        Ball.WHITE.getBody().setLinearVelocity(0, 0);
+        //Ball.WHITE.getBody().setLinearVelocity(0, 0);
         Ball.WHITE.setPosition(whiteBallX, whiteBallY);
+    }
+
+    @Override
+    public void onBallsCollide(Ball b1, Ball b2) {
+        if (b1.isWhite() || b2.isWhite()) {
+            ballsTouched = true;
+        }
     }
 
     public enum Player {

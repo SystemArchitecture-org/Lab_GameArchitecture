@@ -16,6 +16,9 @@ public class Physics implements ContactListener, StepListener {
     private World world;
     private BallPocketedListener ballPocketedListener;
     private ObjectsRestListener objectsRestListener;
+    private BallsCollisionListener ballsCollisionListener;
+    private boolean objectsMoving = false;
+
 
     public Physics() {
         this.world = new World();
@@ -29,7 +32,23 @@ public class Physics implements ContactListener, StepListener {
 
     @Override
     public void begin(Step step, World world) {
+        int movingBallCount = 0;
 
+        for (Ball ball : Ball.values()) {
+            if (!ball.getBody().getLinearVelocity().isZero()){
+
+                movingBallCount++;
+            }
+        }
+
+        if (movingBallCount > 0 && !objectsMoving) {
+            objectsRestListener.onEndAllObjectsRest();
+            objectsMoving = true;
+
+        } else if (movingBallCount == 0 && objectsMoving) {
+            objectsRestListener.onStartAllObjectsRest();
+            objectsMoving = false;
+        }
     }
 
     @Override
@@ -44,7 +63,7 @@ public class Physics implements ContactListener, StepListener {
 
     @Override
     public void end(Step step, World world) {
-        //System.out.println("end world");
+
     }
 
     @Override
@@ -54,32 +73,20 @@ public class Physics implements ContactListener, StepListener {
 
     @Override
     public boolean begin(ContactPoint point) {
-//        System.out.println("Contact");
-//        if(point.isSensor()){
-//            System.out.println("Sensor");
-//            world.
-//            world.removeBody(point.getBody1());
-//            return true;
-//        }
+
+        if (point.getBody1().getUserData() instanceof Ball && point.getBody2().getUserData() instanceof Ball) {
+            Ball ball1 = (Ball) point.getBody1().getUserData();
+            Ball ball2 = (Ball) point.getBody2().getUserData();
+
+            ballsCollisionListener.onBallsCollide(ball1, ball2);
+        }
+
         return true;
     }
 
     @Override
     public void end(ContactPoint point) {
-        int movingBallCount = 0;
 
-        for(Ball ball: Ball.values()){
-            if(ball.getBody().getAngularVelocity() > 0){
-                movingBallCount++;
-            }
-        }
-
-        if(movingBallCount > 0){
-            objectsRestListener.onEndAllObjectsRest();
-
-        } else {
-            objectsRestListener.onStartAllObjectsRest();
-        }
     }
 
     @Override
@@ -137,5 +144,10 @@ public class Physics implements ContactListener, StepListener {
     @Override
     public void postSolve(SolvedContactPoint point) {
 
+    }
+
+
+    public void setBallsCollisionListener(BallsCollisionListener ballsCollisionListener) {
+        this.ballsCollisionListener = ballsCollisionListener;
     }
 }
