@@ -32,6 +32,7 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
     private String foulMessage = "";
     private String actionMessage = "";
     private boolean regularBallPocketed = false;
+    private List<Ball> pocketedBalls = new ArrayList<>();
 
     public Game(Renderer renderer, Physics physics) {
         this.renderer = renderer;
@@ -41,9 +42,10 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
     }
 
     public void onMousePressed(MouseEvent e) {
-        if (ballsMoving) {
-            return;
-        }
+        //TODO: uncomment code
+//        if (ballsMoving) {
+//            return;
+//        }
 
         double x = e.getX();
         double y = e.getY();
@@ -54,9 +56,10 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
     }
 
     public void onMouseReleased(MouseEvent e) {
-        if (ballsMoving || renderer.getCue().isEmpty()) {
-            return;
-        }
+        //TODO: uncomment code
+//        if (ballsMoving || renderer.getCue().isEmpty()) {
+//            return;
+//        }
 
         Cue cue = this.renderer.getCue().get();
         Optional<Ray> ray = cue.getShotRay();
@@ -85,9 +88,10 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
     }
 
     public void setOnMouseDragged(MouseEvent e) {
-        if (ballsMoving || renderer.getCue().isEmpty()) {
-            return;
-        }
+        //TODO: uncomment code
+//        if (ballsMoving || renderer.getCue().isEmpty()) {
+//            return;
+//        }
 
         double x = e.getX();
         double y = e.getY();
@@ -99,7 +103,7 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
         Collections.shuffle(balls);
 
         // positioning the billiard balls IN WORLD COORDINATES: meters
-        int row = 0;
+        int row = balls.size() > 14 ? 0 : 1;
         int col = 0;
         int colSize = 5;
 
@@ -112,6 +116,7 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
 
             b.setPosition(x, y);
             b.getBody().setLinearVelocity(0, 0);
+
             renderer.addBall(b);
 
             row++;
@@ -158,6 +163,7 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
             foulMessage = "Foul: White Ball Pocketed!";
             renderer.removeBall(b);
         } else {
+            pocketedBalls.add(b);
             regularBallPocketed = true;
             renderer.removeBall(b);
             physics.getWorld().removeBody(b.getBody());
@@ -187,9 +193,25 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
         renderer.setStrikeMessage("Next Strike: " + currentPlayer.name);
     }
 
+    private void resetGame() {
+
+        for (Ball b: pocketedBalls) {
+            physics.getWorld().addBody(b.getBody());
+        }
+
+        this.placeBalls(pocketedBalls);
+
+        pocketedBalls.clear();
+
+    }
+
     @Override
     public void onStartAllObjectsRest() {
         ballsMoving = false;
+
+        if (pocketedBalls.size() >= 14) {
+            resetGame();
+        }
 
         if (!ballsTouched) {
             foulMessage = foulMessage.equals("") ? "Foul: White ball did not touch any other ball(s)!" : foulMessage;
