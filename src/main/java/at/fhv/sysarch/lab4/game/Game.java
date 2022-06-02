@@ -87,6 +87,11 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
         this.renderer.setCue(Optional.empty());
     }
 
+    //TODO: Questions:
+    // Half or full unterscheiden
+    // Not pocketed after removing and adding
+    // Special ruling for 8?
+
     public void setOnMouseDragged(MouseEvent e) {
         //TODO: uncomment code
 //        if (ballsMoving || renderer.getCue().isEmpty()) {
