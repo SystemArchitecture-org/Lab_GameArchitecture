@@ -13,7 +13,7 @@ import org.dyn4j.geometry.Vector2;
 
 public class Physics implements ContactListener, StepListener {
 
-    private World world;
+    private final World world;
     private BallPocketedListener ballPocketedListener;
     private ObjectsRestListener objectsRestListener;
     private BallsCollisionListener ballsCollisionListener;

@@ -1,30 +1,25 @@
 package at.fhv.sysarch.lab4.game;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import at.fhv.sysarch.lab4.CoordinateConverter;
 import at.fhv.sysarch.lab4.physics.BallPocketedListener;
 import at.fhv.sysarch.lab4.physics.BallsCollisionListener;
 import at.fhv.sysarch.lab4.physics.ObjectsRestListener;
 import at.fhv.sysarch.lab4.physics.Physics;
 import at.fhv.sysarch.lab4.rendering.Renderer;
 import javafx.scene.input.MouseEvent;
-import org.dyn4j.collision.narrowphase.Raycast;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.RaycastResult;
 import org.dyn4j.geometry.Ray;
-import org.dyn4j.geometry.Vector2;
 
 import static at.fhv.sysarch.lab4.rendering.Renderer.SCALE;
 
 public class Game implements BallPocketedListener, ObjectsRestListener, BallsCollisionListener {
     private final Renderer renderer;
     private final Physics physics;
-    private CoordinateConverter converter;
     private int player1Score = 0;
     private int player2Score = 0;
     private Player currentPlayer = Player.PLAYER_ONE;
@@ -43,7 +38,6 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
         this.physics = physics;
         renderer.setStrikeMessage("Next Strike: " + currentPlayer.name);
         this.initWorld();
-        this.converter = CoordinateConverter.getInstance();
     }
 
     public void onMousePressed(MouseEvent e) {
@@ -54,8 +48,9 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
         double x = e.getX();
         double y = e.getY();
 
-        Cue cue = new Cue(x, y);
-        this.renderer.setCue(Optional.of(cue));
+        this.renderer.setCue(
+                Optional.of(new Cue(x, y))
+        );
     }
 
     public void onMouseReleased(MouseEvent e) {
@@ -133,8 +128,9 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
         List<Ball> balls = new ArrayList<>();
 
         for (Ball b : Ball.values()) {
-            if (b == Ball.WHITE)
+            if (b == Ball.WHITE) {
                 continue;
+            }
 
             balls.add(b);
             physics.getWorld().addBody(b.getBody());
@@ -179,7 +175,6 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
             player2Score += score;
             renderer.setPlayer2Score(player2Score);
         }
-
     }
 
     @Override

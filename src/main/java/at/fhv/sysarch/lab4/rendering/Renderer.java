@@ -51,7 +51,7 @@ public class Renderer extends AnimationTimer {
 
     private Optional<FrameListener> frameListener;
 
-    private Physics physics;
+    private final Physics physics;
 
     public Renderer(final GraphicsContext gc,
                     int sceneWidth, int sceneHeight, Physics physics) {
@@ -262,7 +262,7 @@ public class Renderer extends AnimationTimer {
         strikeMsgTrans.appendTranslation(this.centerX - 250, 150);
         strikeMsgTrans.appendScale(2, 2);
 
-        foulMsgTrans.appendTranslation(this.centerX - 250, this.centerY + 300);
+        foulMsgTrans.appendTranslation(this.centerX - 250, this.centerY + 350);
         foulMsgTrans.appendScale(2, 2);
 
         player1ScoreTrans.appendTranslation(10, this.sceneHeight - 100);
