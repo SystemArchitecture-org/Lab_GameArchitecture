@@ -244,7 +244,6 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
     }
 
     private void resetWhiteBall() {
-        //Ball.WHITE.getBody().setLinearVelocity(0, 0);
         Ball.WHITE.setPosition(whiteBallX, whiteBallY);
     }
 

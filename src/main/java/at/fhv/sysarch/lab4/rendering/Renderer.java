@@ -167,7 +167,7 @@ public class Renderer extends AnimationTimer {
     private void drawBalls() {
         this.gc.setLineWidth(1);
 
-        // render billard balls after table, so they appear on top
+        // render billiard balls after table, so they appear on top
         for (Ball b : this.balls) {
             Transform t = b.getBody().getTransform();
             Circle s = b.getShape();
@@ -178,14 +178,14 @@ public class Renderer extends AnimationTimer {
             double x = t.getTranslationX() * SCALE;
             double y = t.getTranslationY() * SCALE;
 
-            // rendering of billard balls happens in their own coordinates
+            // rendering of billiard balls happens in their own coordinates
             // center of the world is at center of the window not top left corner
             Affine ballTrans = new Affine(this.poolCoords);
             ballTrans.appendTranslation(x, y);
 
             this.gc.setTransform(ballTrans);
 
-            // NOTE center of phyics circle is in the center
+            // NOTE center of physics circle is in the center
             // but javafx draws ovals from top left corner
 
             this.gc.setFill(b.getColor());
@@ -195,7 +195,7 @@ public class Renderer extends AnimationTimer {
                 continue;
             }
 
-            if (false == b.isSolid()) {
+            if (!b.isSolid()) {
                 this.gc.setFill(Color.WHITE);
                 this.gc.fillArc(-r * 0.75, -r * 0.95, d * 0.75, r * 0.75, 0, 180, ArcType.ROUND);
                 this.gc.fillArc(-r * 0.75, r * 0.2, d * 0.75, r * 0.75, 180, 180, ArcType.ROUND);
@@ -318,7 +318,7 @@ public class Renderer extends AnimationTimer {
 
         this.gc.setTransform(pocketTrans);
 
-        // center of phyics circle is in the center
+        // center of physics circle is in the center
         // javafx draws ovals from top left corner
         this.gc.fillOval(-r, -r, d, d);
     }
