@@ -94,16 +94,19 @@ public class Physics implements ContactListener, StepListener {
         if (point.isSensor()) {
             Body ball;
             Body pocket;
+            Vector2 pocketCenter;
 
             if (point.getBody1().getUserData() instanceof Ball) {
                 ball = point.getBody1();
                 pocket = point.getBody2();
+                pocketCenter = point.getFixture2().getShape().getCenter();
             } else {
                 ball = point.getBody2();
                 pocket = point.getBody1();
+                pocketCenter = point.getFixture1().getShape().getCenter();
             }
 
-            if (isBallPocketed(ball, pocket, point)) {
+            if (isBallPocketed(ball, pocket, pocketCenter)) {
                 ballPocketedListener.onBallPocketed((Ball) ball.getUserData());
             }
         }
@@ -111,13 +114,12 @@ public class Physics implements ContactListener, StepListener {
         return true;
     }
 
-    private boolean isBallPocketed(Body ball, Body pocket, PersistedContactPoint point) {
+    private boolean isBallPocketed(Body ball, Body pocket, Vector2 pocketCenter) {
         // World coordinates of ball
         Vector2 ballPosition = ball.getTransform().getTranslation();
 
         // Pocket position (relative to table)
         Vector2 pocketPosition = pocket.getTransform().getTranslation();
-        Vector2 pocketCenter = point.getFixture2().getShape().getCenter();
 
         // World coordinates of pocket
         Vector2 pocketInWorld = pocketPosition.add(pocketCenter);
