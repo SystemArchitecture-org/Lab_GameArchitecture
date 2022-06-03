@@ -32,7 +32,7 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
     private String foulMessage = "";
     private String actionMessage = "";
     private boolean regularBallPocketed = false;
-    private List<Ball> pocketedBalls = new ArrayList<>();
+    private final List<Ball> pocketedBalls = new ArrayList<>();
 
     public Game(Renderer renderer, Physics physics) {
         this.renderer = renderer;
@@ -42,10 +42,9 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
     }
 
     public void onMousePressed(MouseEvent e) {
-        //TODO: uncomment code
-//        if (ballsMoving) {
-//            return;
-//        }
+        if (ballsMoving) {
+            return;
+        }
 
         double x = e.getX();
         double y = e.getY();
@@ -56,10 +55,9 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
     }
 
     public void onMouseReleased(MouseEvent e) {
-        //TODO: uncomment code
-//        if (ballsMoving || renderer.getCue().isEmpty()) {
-//            return;
-//        }
+        if (ballsMoving || renderer.getCue().isEmpty()) {
+            return;
+        }
 
         Cue cue = this.renderer.getCue().get();
         Optional<Ray> ray = cue.getShotRay();
@@ -87,16 +85,10 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
         this.renderer.setCue(Optional.empty());
     }
 
-    //TODO: Questions:
-    // Half or full unterscheiden
-    // Not pocketed after removing and adding
-    // Special ruling for 8?
-
     public void setOnMouseDragged(MouseEvent e) {
-        //TODO: uncomment code
-//        if (ballsMoving || renderer.getCue().isEmpty()) {
-//            return;
-//        }
+        if (ballsMoving || renderer.getCue().isEmpty()) {
+            return;
+        }
 
         double x = e.getX();
         double y = e.getY();

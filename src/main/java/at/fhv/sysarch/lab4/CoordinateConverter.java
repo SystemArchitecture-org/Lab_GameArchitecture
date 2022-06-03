@@ -60,12 +60,12 @@ public class CoordinateConverter {
     }
 
     public CoordinateConverter setSceneWidth(double sceneWidth) {
-        this.centerX = (double) sceneWidth * 0.5;
+        this.centerX = sceneWidth * 0.5;
         return instance;
     }
 
     public CoordinateConverter setSceneHeight(double sceneHeight) {
-        this.centerY = (double) sceneHeight * 0.5;
+        this.centerY = sceneHeight * 0.5;
         return instance;
     }
 }

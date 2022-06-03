@@ -212,7 +212,6 @@ public class Renderer extends AnimationTimer {
     }
 
     private void drawCue() {
-        // TODO: draw cue
         if (cue.isPresent()) {
             Affine baseTrans = new Affine();
             baseTrans.appendTranslation(0, 0);
