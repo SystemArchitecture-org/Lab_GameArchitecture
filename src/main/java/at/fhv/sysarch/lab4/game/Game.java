@@ -73,6 +73,7 @@ public class Game implements BallPocketedListener, ObjectsRestListener, BallsCol
 
                 if (!ball.isWhite()) {
                     isFoul = true;
+                    foulMessage = "Foul: Direct hit of a regular ball!";
                 }
 
                 whiteBallX = Ball.WHITE.getBody().getTransform().getTranslationX();
